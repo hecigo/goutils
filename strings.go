@@ -53,7 +53,7 @@ func CleanKeyword(kw string) []string {
 		keywords[i] = RemoveSpecialChar(k)
 	}
 
-	keywords = RemoveDuplicate(keywords)
+	keywords = Deduplicate(keywords)
 
 	return keywords
 }

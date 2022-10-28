@@ -1,7 +1,7 @@
 package goutils
 
 // Remove duplicated elements from a slice
-func RemoveDuplicate[T string | int](sliceList []T) []T {
+func Deduplicate[T string | int](sliceList []T) []T {
 	allKeys := make(map[T]bool)
 	list := []T{}
 	for _, item := range sliceList {

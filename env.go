@@ -1,3 +1,15 @@
+// `goutils` is a Go utility library that provides a set of useful functions and tools for Go developers.
+//
+// Including:
+//   - `env`: Environment variables management
+//   - `log`: Logging
+//   - `http`: API Response and Error
+//   - `json`: JSON Marshal and Unmarshal everything. `UnsafeConvert` is a function that converts any type to any type.
+//   - `time`: utility functions for time, like Now(), Today(), Yesterday()... in UTC+7
+//   - `uuid`: UUID generator
+//   - `string`: String utility functions: remove Vietnamese accents, format string as URL...
+//   - `slice`: De-duplicate, remove empty elements, shuffle, sort...
+//   - `struct`: Access struct fields by name
 package goutils
 
 import (
@@ -12,14 +24,22 @@ import (
 )
 
 var (
-	env = flag.String("env", "", "Environment profile")
+	env = flag.String("env", "", "Environment profile") // Read environment profile from command line
 )
 
-type EnvDuration time.Duration
-
-// Load environment variables from .env file
+// Load environment variables from .env file.
+// If the environment variable is already set, it WILL NOT be overwritten.
+// The following table shows the priority of environment variables:
+// 1. `.env.development.local`
+// 2. `.env.test.local`
+// 3. `.env.production.local`
+// 4. `.env.local`
+// 5. `.env.development`
+// 6. `.env.test`
+// 7. `.env.production`
+// 8. `.env`
+// View more: https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
 func LoadEnv() {
-	// Load .env (view more: https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use)
 	if env == nil || *env == "" {
 		*env = "development"
 	}
@@ -87,17 +107,17 @@ func Env[T string | bool | int | time.Duration | []string | []int](key string, f
 	}
 }
 
-// Get application name
+// Get application name, default is "app"
 func AppName() string {
-	return Env("APP_NAME", "hexaboi")
+	return Env("APP_NAME", "app")
 }
 
-// Get application version
+// Get application version, default is "v0.0.0"
 func AppVersion() string {
 	return Env("APP_VERSION", "v0.0.0")
 }
 
-// Get API root path
+// Get API root path, default is "/v0"
 func APIRootPath() string {
 	return Env("APP_ROOT_PATH", "/"+AppVersion()[0:2])
 }
