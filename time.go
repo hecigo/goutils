@@ -2,17 +2,26 @@ package goutils
 
 import "time"
 
-var loc, _ = time.LoadLocation("Asia/Ho_Chi_Minh")
+var VnLocation *time.Location
+
+// Load default timezone
+func LoadLocation() {
+	loc, err := time.LoadLocation("Asia/Ho_Chi_Minh")
+	if err != nil {
+		Panic(err)
+	}
+	VnLocation = loc
+}
 
 // Now() in UTC+7
 func Now() time.Time {
-	return time.Now().In(loc)
+	return time.Now().In(VnLocation)
 }
 
 // Today() in UTC+7
 func Today() time.Time {
 	now := Now()
-	return time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, loc)
+	return time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, VnLocation)
 }
 
 // Yesterday() in UTC+7
@@ -22,7 +31,7 @@ func Yesterday() time.Time {
 
 // The first date of year in UTC+7
 func FirstDateOfYear() time.Time {
-	return time.Date(Now().Year(), 1, 1, 0, 0, 0, 0, loc)
+	return time.Date(Now().Year(), 1, 1, 0, 0, 0, 0, VnLocation)
 }
 
 // Format time to string with RFC3339
@@ -47,8 +56,8 @@ func CountDays(from time.Time, to time.Time) int {
 
 // Count days in a year
 func CountDaysInYear(year int) int {
-	beginOfYear := time.Date(year, time.January, 1, 0, 0, 0, 0, loc)
-	endOfYear := time.Date(year, time.December, 31, 0, 0, 0, 0, loc)
+	beginOfYear := time.Date(year, time.January, 1, 0, 0, 0, 0, VnLocation)
+	endOfYear := time.Date(year, time.December, 31, 0, 0, 0, 0, VnLocation)
 	diff := endOfYear.Sub(beginOfYear)
 	return int(diff.Hours() / 24)
 }
