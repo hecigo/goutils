@@ -6,7 +6,9 @@ var VnLocation *time.Location
 
 // Load default timezone
 func LoadLocation() {
-	loc, err := time.LoadLocation("Asia/Ho_Chi_Minh")
+	location := Env("TIMEZONE", "Asia/Ho_Chi_Minh")
+
+	loc, err := time.LoadLocation(location)
 	if err != nil {
 		Panic(err)
 	}

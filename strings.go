@@ -1,6 +1,7 @@
 package goutils
 
 import (
+	"net/url"
 	"regexp"
 	"strings"
 	"unicode/utf8"
@@ -35,6 +36,10 @@ func ToURL(s string) string {
 	s = strings.ToLower(RemoveAccents(s))
 	s = RemoveSpecialChar(s)
 	s = strings.ReplaceAll(s, " ", "-")
+	_, err := url.Parse(s)
+	if err != nil {
+		return ""
+	}
 	return s
 }
 
