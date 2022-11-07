@@ -14,6 +14,9 @@ type Connection interface {
 	// Get the connection to the database.
 	Client(ctx ...context.Context) interface{}
 
+	// Get the connection information.
+	GetConfig(ctx ...context.Context) interface{}
+
 	// Print all connection information from the .env file.
 	Print(name ...string)
 }
@@ -23,16 +26,12 @@ type Connection interface {
 // Type `ctxConnNameKeyType` would be used in this case to replace type `string`.
 // For example:
 //
-//	func (m *Repository) Get(keys []string) (map[string]map[string]int64, error) {
+//	func GetClient(connName string) (Client, error) {
 //		// goutils.CtxConnNameKey must be used instead of string "conn_name"
-//		// "aggs" is the connection name defined in .env file (e.g. REDIS_AGGS_URL)
-//		ctx := context.WithValue(context.Background(), goutils.CtxConnNameKey, "aggs")
-//		rdResult, err := redis.MultiHGetAll(ctx, keys)
-//		if err != nil {
-//			return nil, err
-//		}
-//			return result, nil
-//		}
+//		// `connName` is the connection name defined in .env file (e.g. REDIS_AGGS_URL, connName = "aggs")
+//		ctx := context.WithValue(context.Background(), goutils.CtxConnNameKey, connName)
+//		return Client(ctx)
+//	}
 const CtxConnNameKey ctxConnNameKeyType = "conn_name"
 
 type ctxConnNameKeyType string
