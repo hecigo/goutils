@@ -18,7 +18,9 @@ func EnableLogrus() {
 		log.SetFormatter(&log.JSONFormatter{})
 	} else {
 		log.SetFormatter(&log.TextFormatter{
-			ForceColors: true,
+			ForceColors:   true,
+			DisableColors: false,
+			FullTimestamp: true,
 		})
 	}
 	switch strings.ToLower(Env("LOG_LEVEL", "warn")) {
