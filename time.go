@@ -42,13 +42,8 @@ func TimeStr(t time.Time) string {
 }
 
 // Parse string to time with RFC3339
-func ParseTime(s string) time.Time {
-	t, err := time.Parse(time.RFC3339, s)
-	if err != nil {
-		Error(err)
-		return time.Time{}
-	}
-	return t
+func ParseTime(s string) (time.Time, error) {
+	return time.Parse(time.RFC3339, s)
 }
 
 // Count days between 2 dates
