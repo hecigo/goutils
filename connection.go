@@ -27,11 +27,11 @@ type Connection interface {
 // For example:
 //
 //	func GetClient(connName string) (Client, error) {
-//		// goutils.CtxConnNameKey must be used instead of string "conn_name"
+//		// goutils.CtxKey_ConnName must be used instead of string "conn_name"
 //		// `connName` is the connection name defined in .env file (e.g. REDIS_AGGS_URL, connName = "aggs")
-//		ctx := context.WithValue(context.Background(), goutils.CtxConnNameKey, connName)
+//		ctx := context.WithValue(context.Background(), goutils.CtxKey_ConnName, connName)
 //		return Client(ctx)
 //	}
-const CtxConnNameKey ctxConnNameKeyType = "conn_name"
+const CtxKey_ConnName ctxKeyType_ConnName = "conn_name"
 
-type ctxConnNameKeyType string
+type ctxKeyType_ConnName string
