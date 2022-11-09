@@ -57,6 +57,7 @@ func StrConv[T any](val string) (t T, err error) {
 }
 
 // Convert map[string]string to map[string]T. T can be any type.
+// T will be convert by [StrConv].
 func MapStrConv[T any](m map[string]string) (result map[string]T, err error) {
 	result = make(map[string]T)
 	for k, v := range m {
@@ -70,6 +71,7 @@ func MapStrConv[T any](m map[string]string) (result map[string]T, err error) {
 }
 
 // Convert map[string]*string to map[string]*T. T can be any type.
+// T will be convert by [StrConv].
 func MapPtrStrConv[T any](m map[string]*string) (result map[string]*T, err error) {
 	result = make(map[string]*T)
 	for k, v := range m {
@@ -83,6 +85,39 @@ func MapPtrStrConv[T any](m map[string]*string) (result map[string]*T, err error
 			return nil, err
 		}
 		result[k] = &t
+	}
+	return result, nil
+}
+
+// Convert []string to []T. T can be any type.
+// T will be convert by [StrConv].
+func SliceStrConv[T any](s []string) (result []T, err error) {
+	result = make([]T, len(s))
+	for i, v := range s {
+		t, err := StrConv[T](v)
+		if err != nil {
+			return nil, err
+		}
+		result[i] = t
+	}
+	return result, nil
+}
+
+// Convert []*string to []*T. T can be any type.
+// T will be convert by [StrConv].
+func SlicePtrStrConv[T any](s []*string) (result []*T, err error) {
+	result = make([]*T, len(s))
+	for i, v := range s {
+		if v == nil {
+			result[i] = nil
+			continue
+		}
+
+		t, err := StrConv[T](*v)
+		if err != nil {
+			return nil, err
+		}
+		result[i] = &t
 	}
 	return result, nil
 }
