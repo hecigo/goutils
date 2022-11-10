@@ -56,8 +56,10 @@ func ReflectStrConv(val string, reflectType reflect.Type) (r interface{}, err er
 		case reflect.Struct:
 			r = reflect.New(reflectType).Interface()
 			err = json.Unmarshal([]byte(val), &r)
+		case reflect.Interface:
+			err = errors.New("`reflectType` must be a specific type")
 		default:
-			err = errors.New("unsupported type")
+			err = errors.New("`reflectType` is not supported")
 		}
 	}
 	return r, err
@@ -85,18 +87,27 @@ func ReflectSliceStrConv(s []string, reflectType reflect.Type) (result []interfa
 	return result, nil
 }
 
-// Convert map[string]string to map[string]T. T can be any type.
-// T will be convert by [StrConv].
-func MapStrConv[T any](m map[string]string) (result map[string]T, err error) {
-	result = make(map[string]T)
+// Convert map[string]string to map[string][reflect.Type] by [ReflectStrConv].
+func ReflectMapStrConv(m map[string]string, elemType reflect.Type) (result map[string]interface{}, err error) {
+	result = make(map[string]interface{})
 	for k, v := range m {
-		t, err := StrConv[T](v)
+		temp, err := ReflectStrConv(v, elemType)
 		if err != nil {
 			return nil, err
 		}
-		result[k] = t
+		result[k] = temp
 	}
 	return result, nil
+}
+
+// Convert map[string]string to T by [ReflectMapStrConv], with T is a map[string]any.
+func MapStrConv[T any](m map[string]string) (result T, err error) {
+	var t T
+	temp, err := ReflectMapStrConv(m, reflect.TypeOf(t).Elem())
+	if err != nil {
+		return result, err
+	}
+	return Unmarshal[T](temp)
 }
 
 // Convert map[string]*string to map[string]*T. T can be any type.
