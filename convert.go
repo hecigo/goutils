@@ -5,55 +5,84 @@ import (
 	"reflect"
 	"strconv"
 	"time"
+	"unsafe"
+
+	"github.com/goccy/go-json"
 )
+
+// Convert string to any type by [reflect.Type].
+func ReflectStrConv(val string, reflectType reflect.Type) (r interface{}, err error) {
+	switch reflectType {
+	case reflect.TypeOf(time.Time{}):
+		r, err = ParseTime(val)
+	case reflect.TypeOf(time.Duration(0)):
+		r, err = time.ParseDuration(val)
+	default:
+		switch reflectType.Kind() {
+		case reflect.String:
+			r = val
+		case reflect.Int:
+			r, err = strconv.Atoi(val)
+		case reflect.Int8:
+			r, err = strconv.ParseInt(val, 10, 8)
+		case reflect.Int16:
+			r, err = strconv.ParseInt(val, 10, 16)
+		case reflect.Int32:
+			r, err = strconv.ParseInt(val, 10, 32)
+		case reflect.Int64:
+			r, err = strconv.ParseInt(val, 10, 64)
+		case reflect.Uint:
+			r, err = strconv.ParseUint(val, 10, 0)
+		case reflect.Uint8:
+			r, err = strconv.ParseUint(val, 10, 8)
+		case reflect.Uint16:
+			r, err = strconv.ParseUint(val, 10, 16)
+		case reflect.Uint32:
+			r, err = strconv.ParseUint(val, 10, 32)
+		case reflect.Uint64:
+			r, err = strconv.ParseUint(val, 10, 64)
+		case reflect.Float32:
+			r, err = strconv.ParseFloat(val, 32)
+		case reflect.Float64:
+			r, err = strconv.ParseFloat(val, 64)
+		case reflect.Bool:
+			r, err = strconv.ParseBool(val)
+		case reflect.Slice:
+			r = reflect.MakeSlice(reflectType, 0, 0).Interface()
+			err = json.Unmarshal([]byte(val), &r)
+		case reflect.Map:
+			r = reflect.MakeMap(reflectType).Interface()
+			err = json.Unmarshal([]byte(val), &r)
+		case reflect.Struct:
+			r = reflect.New(reflectType).Interface()
+			err = json.Unmarshal([]byte(val), &r)
+		default:
+			err = errors.New("unsupported type")
+		}
+	}
+	return r, err
+}
 
 // Convert string to any type
 func StrConv[T any](val string) (t T, err error) {
-	tType := reflect.TypeOf(t)
-
-	var temp interface{}
-	switch tType {
-	case reflect.TypeOf(time.Time{}):
-		temp, err = ParseTime(val)
-	case reflect.TypeOf(time.Duration(0)):
-		temp, err = time.ParseDuration(val)
-	default:
-		switch tType.Kind() {
-		case reflect.Int:
-			temp, err = strconv.Atoi(val)
-		case reflect.Int8:
-			temp, err = strconv.ParseInt(val, 10, 8)
-		case reflect.Int16:
-			temp, err = strconv.ParseInt(val, 10, 16)
-		case reflect.Int32:
-			temp, err = strconv.ParseInt(val, 10, 32)
-		case reflect.Int64:
-			temp, err = strconv.ParseInt(val, 10, 64)
-		case reflect.Uint:
-			temp, err = strconv.ParseUint(val, 10, 0)
-		case reflect.Uint8:
-			temp, err = strconv.ParseUint(val, 10, 8)
-		case reflect.Uint16:
-			temp, err = strconv.ParseUint(val, 10, 16)
-		case reflect.Uint32:
-			temp, err = strconv.ParseUint(val, 10, 32)
-		case reflect.Uint64:
-			temp, err = strconv.ParseUint(val, 10, 64)
-		case reflect.Float32:
-			temp, err = strconv.ParseFloat(val, 32)
-		case reflect.Float64:
-			temp, err = strconv.ParseFloat(val, 64)
-		case reflect.Bool:
-			temp, err = strconv.ParseBool(val)
-		case reflect.String:
-			temp = val
-		case reflect.Struct, reflect.Slice, reflect.Map:
-			return Unmarshal[T](val)
-		default:
-			return t, errors.New("unsupported type")
-		}
+	temp, err := ReflectStrConv(val, reflect.TypeOf(t))
+	if err != nil {
+		return t, err
 	}
-	return temp.(T), err
+	return Unmarshal[T](temp)
+}
+
+// Convert []string to []T by [ReflectStrConv].
+func ReflectSliceStrConv(s []string, reflectType reflect.Type) (result []interface{}, err error) {
+	result = make([]interface{}, len(s))
+	for i, v := range s {
+		temp, err := ReflectStrConv(v, reflectType)
+		if err != nil {
+			return nil, err
+		}
+		result[i] = temp
+	}
+	return result, nil
 }
 
 // Convert map[string]string to map[string]T. T can be any type.
@@ -89,10 +118,10 @@ func MapPtrStrConv[T any](m map[string]*string) (result map[string]*T, err error
 	return result, nil
 }
 
-// Convert []string to []T. T can be any type.
+// Convert []string to T. T is a slice of any type.
 // T will be convert by [StrConv].
-func SliceStrConv[T any](s []string) (result []T, err error) {
-	result = make([]T, len(s))
+func SliceStrConv[T any](s []string) (result []interface{}, err error) {
+	result = make([]interface{}, len(s))
 	for i, v := range s {
 		t, err := StrConv[T](v)
 		if err != nil {
@@ -106,6 +135,10 @@ func SliceStrConv[T any](s []string) (result []T, err error) {
 // Convert []*string to []*T. T can be any type.
 // T will be convert by [StrConv].
 func SlicePtrStrConv[T any](s []*string) (result []*T, err error) {
+	if reflect.TypeOf(new(T)) == reflect.TypeOf(s) {
+		return *(*[]*T)(unsafe.Pointer(&s)), nil
+	}
+
 	result = make([]*T, len(s))
 	for i, v := range s {
 		if v == nil {
