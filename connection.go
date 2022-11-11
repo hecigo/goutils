@@ -32,6 +32,6 @@ type Connection interface {
 //		ctx := context.WithValue(context.Background(), goutils.CtxKey_ConnName, connName)
 //		return Client(ctx)
 //	}
-const CtxKey_ConnName ctxKeyType_ConnName = "conn_name"
+const CtxKey_ConnName ctxKeyType_Conn = "conn_name"
 
-type ctxKeyType_ConnName string
+type ctxKeyType_Conn string
