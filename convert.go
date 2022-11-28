@@ -71,6 +71,7 @@ func StrConv[T any](val string) (t T, err error) {
 	if err != nil {
 		return t, err
 	}
+
 	return Unmarshal[T](temp)
 }
 
@@ -103,6 +104,10 @@ func ReflectMapStrConv(m map[string]string, elemType reflect.Type) (result map[s
 // Convert map[string]string to T by [ReflectMapStrConv], with T is a map[string]any.
 func MapStrConv[T any](m map[string]string) (result T, err error) {
 	var t T
+	if reflect.TypeOf(m) == reflect.TypeOf(t) {
+		return reflect.ValueOf(m).Interface().(T), nil
+	}
+
 	temp, err := ReflectMapStrConv(m, reflect.TypeOf(t).Elem())
 	if err != nil {
 		return result, err
@@ -164,4 +169,46 @@ func SlicePtrStrConv[T any](s []*string) (result []*T, err error) {
 		result[i] = &t
 	}
 	return result, nil
+}
+
+// Convert any to string
+func AnyToStr(val interface{}) (string, error) {
+	switch val := val.(type) {
+	case string:
+		return val, nil
+	case []byte:
+		return string(val), nil
+	case int:
+		return strconv.Itoa(val), nil
+	case int8:
+		return strconv.Itoa(int(val)), nil
+	case int16:
+		return strconv.Itoa(int(val)), nil
+	case int32:
+		return strconv.Itoa(int(val)), nil
+	case int64:
+		return strconv.Itoa(int(val)), nil
+	case uint:
+		return strconv.Itoa(int(val)), nil
+	case uint8:
+		return strconv.Itoa(int(val)), nil
+	case uint16:
+		return strconv.Itoa(int(val)), nil
+	case uint32:
+		return strconv.Itoa(int(val)), nil
+	case uint64:
+		return strconv.Itoa(int(val)), nil
+	case float32:
+		return strconv.FormatFloat(float64(val), 'f', -1, 32), nil
+	case float64:
+		return strconv.FormatFloat(val, 'f', -1, 64), nil
+	case bool:
+		return strconv.FormatBool(val), nil
+	case time.Time:
+		return TimeStr(val), nil
+	case time.Duration:
+		return val.String(), nil
+	default:
+		return Marshal(val)
+	}
 }
