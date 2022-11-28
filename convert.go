@@ -71,6 +71,7 @@ func StrConv[T any](val string) (t T, err error) {
 	if err != nil {
 		return t, err
 	}
+
 	return Unmarshal[T](temp)
 }
 
@@ -164,4 +165,46 @@ func SlicePtrStrConv[T any](s []*string) (result []*T, err error) {
 		result[i] = &t
 	}
 	return result, nil
+}
+
+// Convert any to string
+func AnyToStr(val interface{}) (string, error) {
+	switch val.(type) {
+	case string:
+		return val.(string), nil
+	case []byte:
+		return string(val.([]byte)), nil
+	case int:
+		return strconv.Itoa(val.(int)), nil
+	case int8:
+		return strconv.Itoa(int(val.(int8))), nil
+	case int16:
+		return strconv.Itoa(int(val.(int16))), nil
+	case int32:
+		return strconv.Itoa(int(val.(int32))), nil
+	case int64:
+		return strconv.Itoa(int(val.(int64))), nil
+	case uint:
+		return strconv.Itoa(int(val.(uint))), nil
+	case uint8:
+		return strconv.Itoa(int(val.(uint8))), nil
+	case uint16:
+		return strconv.Itoa(int(val.(uint16))), nil
+	case uint32:
+		return strconv.Itoa(int(val.(uint32))), nil
+	case uint64:
+		return strconv.Itoa(int(val.(uint64))), nil
+	case float32:
+		return strconv.FormatFloat(float64(val.(float32)), 'f', -1, 32), nil
+	case float64:
+		return strconv.FormatFloat(val.(float64), 'f', -1, 64), nil
+	case bool:
+		return strconv.FormatBool(val.(bool)), nil
+	case time.Time:
+		return TimeStr(val.(time.Time)), nil
+	case time.Duration:
+		return val.(time.Duration).String(), nil
+	default:
+		return Marshal(val)
+	}
 }

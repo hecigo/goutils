@@ -38,17 +38,21 @@ func FirstDateOfYear() time.Time {
 
 // Format time to string with RFC3339
 func TimeStr(t time.Time) string {
-	return t.Format(time.RFC3339)
+	return t.In(VnLocation).Format(time.RFC3339Nano)
 }
 
 // Parse string to time with RFC3339
 func ParseTime(s string) (time.Time, error) {
-	return time.Parse(time.RFC3339, s)
+	t, err := time.Parse(time.RFC3339Nano, s)
+	if err != nil {
+		return time.Time{}, err
+	}
+	return t.In(VnLocation), nil
 }
 
 // Count days between 2 dates
 func CountDays(from time.Time, to time.Time) int {
-	return int(to.Sub(from).Hours() / 24)
+	return int(to.In(VnLocation).Sub(from.In(VnLocation)).Hours() / 24)
 }
 
 // Count days in a year
