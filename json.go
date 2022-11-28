@@ -58,8 +58,6 @@ func Unmarshal[T any](origin interface{}) (T, error) {
 		if err != nil {
 			return dest, err
 		}
-		err := json.Unmarshal(bytes, &dest)
-		return dest, err
 	default:
 		mbytes, err := json.Marshal(origin)
 		if err != nil {

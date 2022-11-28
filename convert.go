@@ -173,41 +173,41 @@ func SlicePtrStrConv[T any](s []*string) (result []*T, err error) {
 
 // Convert any to string
 func AnyToStr(val interface{}) (string, error) {
-	switch val.(type) {
+	switch val := val.(type) {
 	case string:
-		return val.(string), nil
+		return val, nil
 	case []byte:
-		return string(val.([]byte)), nil
+		return string(val), nil
 	case int:
-		return strconv.Itoa(val.(int)), nil
+		return strconv.Itoa(val), nil
 	case int8:
-		return strconv.Itoa(int(val.(int8))), nil
+		return strconv.Itoa(int(val)), nil
 	case int16:
-		return strconv.Itoa(int(val.(int16))), nil
+		return strconv.Itoa(int(val)), nil
 	case int32:
-		return strconv.Itoa(int(val.(int32))), nil
+		return strconv.Itoa(int(val)), nil
 	case int64:
-		return strconv.Itoa(int(val.(int64))), nil
+		return strconv.Itoa(int(val)), nil
 	case uint:
-		return strconv.Itoa(int(val.(uint))), nil
+		return strconv.Itoa(int(val)), nil
 	case uint8:
-		return strconv.Itoa(int(val.(uint8))), nil
+		return strconv.Itoa(int(val)), nil
 	case uint16:
-		return strconv.Itoa(int(val.(uint16))), nil
+		return strconv.Itoa(int(val)), nil
 	case uint32:
-		return strconv.Itoa(int(val.(uint32))), nil
+		return strconv.Itoa(int(val)), nil
 	case uint64:
-		return strconv.Itoa(int(val.(uint64))), nil
+		return strconv.Itoa(int(val)), nil
 	case float32:
-		return strconv.FormatFloat(float64(val.(float32)), 'f', -1, 32), nil
+		return strconv.FormatFloat(float64(val), 'f', -1, 32), nil
 	case float64:
-		return strconv.FormatFloat(val.(float64), 'f', -1, 64), nil
+		return strconv.FormatFloat(val, 'f', -1, 64), nil
 	case bool:
-		return strconv.FormatBool(val.(bool)), nil
+		return strconv.FormatBool(val), nil
 	case time.Time:
-		return TimeStr(val.(time.Time)), nil
+		return TimeStr(val), nil
 	case time.Duration:
-		return val.(time.Duration).String(), nil
+		return val.String(), nil
 	default:
 		return Marshal(val)
 	}
