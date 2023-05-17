@@ -1,4 +1,4 @@
-module github.com/hpi-tech/goutils
+module github.com/hecigo/goutils
 
 go 1.19
 
