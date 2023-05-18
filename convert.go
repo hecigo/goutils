@@ -134,6 +134,22 @@ func MapPtrStrConv[T any](m map[string]*string) (result map[string]*T, err error
 	return result, nil
 }
 
+// Convert map[string]interface{} to a struct.
+func MapStrAnyToStruct(source map[string]interface{}, dest interface{}) error {
+	// Convert map to json string
+	bytes, err := json.Marshal(source)
+	if err != nil {
+		return err
+	}
+
+	// Convert json string to struct
+	if err := json.Unmarshal(bytes, dest); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Convert []string to T. T is a slice of any type.
 // T will be convert by [StrConv].
 func SliceStrConv[T any](s []string) (result []interface{}, err error) {
