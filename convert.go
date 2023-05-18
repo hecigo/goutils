@@ -187,7 +187,7 @@ func SlicePtrStrConv[T any](s []*string) (result []*T, err error) {
 	return result, nil
 }
 
-// Convert any to string
+// Convert any to string, throw error
 func AnyToStr(val interface{}) (string, error) {
 	switch val := val.(type) {
 	case string:
@@ -227,4 +227,13 @@ func AnyToStr(val interface{}) (string, error) {
 	default:
 		return Marshal(val)
 	}
+}
+
+// Convert any to string with error as a result.
+func ToStr(val interface{}) string {
+	str, err := AnyToStr(val)
+	if err != nil {
+		return err.Error()
+	}
+	return str
 }

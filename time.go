@@ -37,7 +37,10 @@ func FirstDateOfYear() time.Time {
 }
 
 // Format time to string with RFC3339
-func TimeStr(t time.Time) string {
+func TimeStr(t time.Time, format ...string) string {
+	if len(format) > 0 {
+		return t.In(VnLocation).Format(format[0])
+	}
 	return t.In(VnLocation).Format(time.RFC3339Nano)
 }
 
