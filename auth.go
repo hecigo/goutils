@@ -22,3 +22,16 @@ func EnableAPISecretKeys() {
 		fmt.Println("└──────────────────────────────────────")
 	}
 }
+
+// Check an API secret key is valid or not
+func CheckAPISecretKey(apiKey string) error {
+	key, err := Decrypt(apiKey)
+	if err != nil {
+		return fmt.Errorf("error decrypting your classified --> %v", err)
+	}
+
+	if _, ok := clientSecrets[key]; ok {
+		return nil
+	}
+	return fmt.Errorf("secret key not found")
+}
