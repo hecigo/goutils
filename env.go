@@ -39,7 +39,7 @@ var (
 // 7. `.env.production`
 // 8. `.env`
 // View more: https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
-func LoadEnv() {
+func LoadEnv() string {
 	if env == nil || *env == "" {
 		*env = "development"
 	}
@@ -49,6 +49,7 @@ func LoadEnv() {
 	}
 	godotenv.Load(".env." + *env)
 	godotenv.Load() // Load the default environment
+	return *env
 }
 
 // Get environment variable. If the environment variable is not set, return the default value.

@@ -1,7 +1,8 @@
 package goutils
 
-func QuickLoad() {
-	LoadEnv()
+func QuickLoad() string {
+	env := LoadEnv()
 	EnableLogrus()
 	LoadLocation()
+	return env
 }
